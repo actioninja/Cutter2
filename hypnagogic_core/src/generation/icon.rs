@@ -44,7 +44,6 @@ pub fn generate_map_icon(
             ));
         }
         fill_image_color(&mut text_image, *text_color);
-        text_image.save(format!("C:\\junk\\${text}.png")).unwrap();
         let text_width = text_image.width();
         let text_height = text_image.height();
         let (text_x, text_y) = match text_position {
