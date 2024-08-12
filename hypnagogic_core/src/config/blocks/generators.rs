@@ -28,6 +28,10 @@ fn bottom_right() -> Position {
     Position::BottomRight
 }
 
+fn default_dim() -> u32 {
+    32
+}
+
 #[allow(clippy::unnecessary_wraps)] // wrap is needed for serde default
 fn default_outer_border() -> Option<Border> {
     Some(Border {
@@ -45,6 +49,10 @@ pub struct MapIcon {
     pub icon_state_name: String,
     #[serde(default)]
     pub automatic: bool,
+    #[serde(default = "default_dim")]
+    pub height: u32,
+    #[serde(default = "default_dim")]
+    pub width: u32,
     #[serde(default = "white")]
     pub base_color: Color,
     #[serde(default)]
@@ -66,6 +74,8 @@ impl Default for MapIcon {
         Self {
             icon_state_name: "map_icon".to_string(),
             automatic: false,
+            height: 32,
+            width: 32,
             base_color: Color::new(255, 255, 255, 255),
             text: Some("DEF".to_string()),
             text_color: Color::new(0, 0, 0, 255),

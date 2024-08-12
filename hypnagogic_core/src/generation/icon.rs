@@ -7,11 +7,13 @@ use crate::generation::text::generate_text_block;
 use crate::util::color::fill_image_color;
 
 pub fn generate_map_icon(
-    height: u32,
-    width: u32,
+    output_width: u32,
+    output_height: u32,
     args: &MapIcon,
 ) -> Result<DynamicImage, GenerationError> {
     let MapIcon {
+        width,
+        height,
         base_color,
         text,
         text_color,
@@ -21,8 +23,8 @@ pub fn generate_map_icon(
         outer_border,
         ..
     } = args;
-    let mut image = DynamicImage::new_rgba8(width, height);
-    draw_rect(&mut image, 0, 0, width, height, *base_color);
+    let mut image = DynamicImage::new_rgba8(*width, *height);
+    draw_rect(&mut image, 0, 0, *width, *height, *base_color);
     // draw the text block
 
     if let Some(text) = text {
@@ -42,6 +44,7 @@ pub fn generate_map_icon(
             ));
         }
         fill_image_color(&mut text_image, *text_color);
+        text_image.save(format!("C:\\junk\\${text}.png")).unwrap();
         let text_width = text_image.width();
         let text_height = text_image.height();
         let (text_x, text_y) = match text_position {
@@ -56,13 +59,15 @@ pub fn generate_map_icon(
 
     // outer border
     if let Some(border) = outer_border {
-        draw_border(&mut image, 0, 0, width, height, *border);
+        draw_border(&mut image, 0, 0, *width, *height, *border);
     }
     // inner border
     if let Some(border) = inner_border {
         draw_border(&mut image, 1, 1, width - 2, height - 2, *border);
     }
-    Ok(image)
+    let mut final_image = DynamicImage::new_rgba8(output_width, output_height);
+    image::imageops::overlay(&mut final_image, &image, 0, (output_height - height) as i64);
+    Ok(final_image)
 }
 
 #[cfg(test)]
