@@ -30,7 +30,7 @@ use crate::operations::{
 };
 use crate::util::adjacency::Adjacency;
 use crate::util::corners::{Corner, CornerType, Side};
-use crate::util::icon_ops::dedupe_frames;
+use crate::util::icon_ops::{colors_in_image, dedupe_frames};
 use crate::util::repeat_for;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
@@ -149,8 +149,12 @@ impl IconOperationConfig for BitmaskSlice {
         }
 
         if let Some(map_icon) = &self.map_icon {
-            let icon =
-                generate_map_icon(self.output_icon_size.x, self.output_icon_size.y, map_icon)?;
+            let icon = generate_map_icon(
+                self.output_icon_size.x,
+                self.output_icon_size.y,
+                &colors_in_image(img),
+                map_icon,
+            )?;
             icon_states.push(IconState {
                 name: map_icon.icon_state_name.clone(),
                 dirs: 1,

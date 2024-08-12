@@ -4,13 +4,16 @@ use crate::config::blocks::generators::{MapIcon, Position};
 use crate::generation::error::GenerationError;
 use crate::generation::rect::{draw_border, draw_rect};
 use crate::generation::text::generate_text_block;
-use crate::util::color::fill_image_color;
+use crate::util::color::{fill_image_color, Color};
 
 pub fn generate_map_icon(
     output_width: u32,
     output_height: u32,
+    colors: &[Color],
     args: &MapIcon,
 ) -> Result<DynamicImage, GenerationError> {
+    let mut args = args.clone();
+    args.gen_colors(colors);
     let MapIcon {
         width,
         height,
@@ -23,12 +26,12 @@ pub fn generate_map_icon(
         outer_border,
         ..
     } = args;
-    let mut image = DynamicImage::new_rgba8(*width, *height);
-    draw_rect(&mut image, 0, 0, *width, *height, *base_color);
+    let mut image = DynamicImage::new_rgba8(width, height);
+    draw_rect(&mut image, 0, 0, width, height, base_color);
     // draw the text block
 
     if let Some(text) = text {
-        let mut text_image = generate_text_block(text, *text_alignment);
+        let mut text_image = generate_text_block(&text, text_alignment);
         if text_image.width() > (width - 4) {
             return Err(GenerationError::TextTooLong(
                 text.clone(),
@@ -43,7 +46,7 @@ pub fn generate_map_icon(
                 (height - 4) / 6,
             ));
         }
-        fill_image_color(&mut text_image, *text_color);
+        fill_image_color(&mut text_image, text_color);
         let text_width = text_image.width();
         let text_height = text_image.height();
         let (text_x, text_y) = match text_position {
@@ -58,11 +61,11 @@ pub fn generate_map_icon(
 
     // outer border
     if let Some(border) = outer_border {
-        draw_border(&mut image, 0, 0, *width, *height, *border);
+        draw_border(&mut image, 0, 0, width, height, border);
     }
     // inner border
     if let Some(border) = inner_border {
-        draw_border(&mut image, 1, 1, width - 2, height - 2, *border);
+        draw_border(&mut image, 1, 1, width - 2, height - 2, border);
     }
     let mut final_image = DynamicImage::new_rgba8(output_width, output_height);
     image::imageops::overlay(&mut final_image, &image, 0, (output_height - height) as i64);

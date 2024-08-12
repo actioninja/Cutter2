@@ -21,7 +21,7 @@ use crate::operations::{
 };
 use crate::util::adjacency::Adjacency;
 use crate::util::corners::{Corner, Side};
-use crate::util::icon_ops::dedupe_frames;
+use crate::util::icon_ops::{colors_in_image, dedupe_frames};
 use crate::util::repeat_for;
 
 #[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
@@ -170,6 +170,7 @@ impl IconOperationConfig for BitmaskDirectionalVis {
             let icon = generate_map_icon(
                 self.bitmask_slice_config.output_icon_size.x,
                 self.bitmask_slice_config.output_icon_size.y,
+                &colors_in_image(img),
                 map_icon,
             )?;
             icon_states.push(IconState {

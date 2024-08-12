@@ -1,1 +1,7 @@
 template = "bitmask/slice-tallwalls-directionalvis"
+
+[map_icon]
+icon_state_name = "map_icon"
+automatic = true
+height = 32
+width = 32
